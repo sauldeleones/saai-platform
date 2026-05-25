@@ -70,7 +70,16 @@ ollama --version
 
 ---
 
-## Instalación paso a paso
+## Guías de instalación por sistema operativo
+
+| Sistema | Guía |
+|---|---|
+| macOS (Apple Silicon) | [docs/guia-instalacion.md](docs/guia-instalacion.md) |
+| Windows 10 / 11 | [docs/guia-windows.md](docs/guia-windows.md) |
+
+---
+
+## Instalación paso a paso (macOS)
 
 ### 1. Clonar el repositorio
 
