@@ -9,6 +9,7 @@ export const cursos = {
   eliminar: (id) => api.delete(`/cursos/${id}`),
   agregarTema: (cursoId, datos) => api.post(`/cursos/${cursoId}/temas`, datos),
   listarTemas: (cursoId) => api.get(`/cursos/${cursoId}/temas`),
+  brechas: (cursoId) => api.get(`/cursos/${cursoId}/brechas`),
 }
 
 export const estudiantes = {
