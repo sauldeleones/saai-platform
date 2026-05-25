@@ -1,0 +1,14 @@
+fastapi
+uvicorn[standard]
+sqlalchemy
+pydantic
+pydantic-settings
+python-multipart
+aiofiles
+python-docx
+PyPDF2
+Pillow
+pytesseract
+httpx
+anthropic
+python-dotenv
