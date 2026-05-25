@@ -5,7 +5,8 @@ const links = [
   { to: '/cursos',      label: 'Cursos',        icon: '📚' },
   { to: '/estudiantes', label: 'Estudiantes',   icon: '👥' },
   { to: '/entregas',    label: 'Entregas',      icon: '📁' },
-  { to: '/evaluaciones',label: 'Evaluaciones',  icon: '📝' },
+  { to: '/evaluaciones',       label: 'Evaluaciones',       icon: '📝' },
+  { to: '/retroalimentacion', label: 'Retroalimentación',  icon: '💬' },
 ]
 
 export default function Sidebar() {

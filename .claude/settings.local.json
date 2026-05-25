@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(touch backend/models/__init__.py backend/routers/__init__.py backend/services/__init__.py backend/schemas/__init__.py)",
+      "Bash(python3 -c ' *)"
+    ],
+    "additionalDirectories": [
+      "/Users/sauldeleones/saai-platform/backend/models"
+    ]
+  }
+}

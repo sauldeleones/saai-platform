@@ -10,6 +10,8 @@ export const cursos = {
   agregarTema: (cursoId, datos) => api.post(`/cursos/${cursoId}/temas`, datos),
   listarTemas: (cursoId) => api.get(`/cursos/${cursoId}/temas`),
   brechas: (cursoId) => api.get(`/cursos/${cursoId}/brechas`),
+  retroalimentacion: (cursoId, estudianteId) =>
+    api.get(`/cursos/${cursoId}/retroalimentacion/${estudianteId}`),
 }
 
 export const estudiantes = {
