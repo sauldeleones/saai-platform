@@ -51,6 +51,8 @@ def _prompt_examen(perfil_dominio: dict, temas_curso: list[str], tipo: str) -> s
     temas_numerados = "\n".join(f"{i+1}. {t}" for i, t in enumerate(temas_curso))
     nombres_exactos = ", ".join(f'"{t}"' for t in temas_curso)
 
+    temas_trabajados = list(perfil_dominio.keys())
+
     if tipo == "adaptive":
         if temas_debiles:
             enfoque = f"Genera preguntas sobre los temas con dominio bajo: {', '.join(temas_debiles)}."
@@ -59,7 +61,10 @@ def _prompt_examen(perfil_dominio: dict, temas_curso: list[str], tipo: str) -> s
         else:
             enfoque = "El alumno domina todos los temas evaluados. Genera preguntas de nivel avanzado."
     else:
-        enfoque = "Distribuye las 5 preguntas entre los temas del temario."
+        if temas_trabajados:
+            enfoque = f"Distribuye las 5 preguntas entre los temas que el alumno ya trabajó en sus entregas: {', '.join(temas_trabajados)}. No uses temas que no estén en esta lista."
+        else:
+            enfoque = "No hay entregas previas del alumno. Genera 5 preguntas introductorias sobre los temas del temario."
 
     perfil_str = "\n".join(
         f"- {t}: {d}% de dominio" for t, d in perfil_dominio.items()
