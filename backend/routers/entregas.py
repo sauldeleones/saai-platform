@@ -9,6 +9,7 @@ from database import get_db
 from models.entrega import Entrega, EstadoEntrega
 from models.estudiante import Estudiante
 from models.curso import Curso
+from models.analisis import Analisis
 from schemas.schemas import EntregaRead
 from services.file_processor import detectar_tipo, extraer_texto
 
@@ -72,6 +73,25 @@ def obtener_entrega(entrega_id: int, db: Session = Depends(get_db)):
     if not entrega:
         raise HTTPException(status_code=404, detail="Entrega no encontrada")
     return entrega
+
+
+@router.delete("/{entrega_id}", status_code=204)
+def eliminar_entrega(entrega_id: int, db: Session = Depends(get_db)):
+    entrega = db.query(Entrega).filter(Entrega.id == entrega_id).first()
+    if not entrega:
+        raise HTTPException(status_code=404, detail="Entrega no encontrada")
+    # Borrar análisis asociado si existe
+    analisis = db.query(Analisis).filter(Analisis.entrega_id == entrega_id).first()
+    if analisis:
+        db.delete(analisis)
+    # Borrar archivo del disco
+    if entrega.ruta_archivo:
+        try:
+            Path(entrega.ruta_archivo).unlink(missing_ok=True)
+        except Exception:
+            pass
+    db.delete(entrega)
+    db.commit()
 
 
 @router.get("/{entrega_id}/texto")

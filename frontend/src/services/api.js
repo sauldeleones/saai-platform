@@ -27,6 +27,7 @@ export const entregas = {
   subir: (formData) => api.post('/entregas/', formData, {
     headers: { 'Content-Type': 'multipart/form-data' },
   }),
+  eliminar: (id) => api.delete(`/entregas/${id}`),
   verTexto: (id) => api.get(`/entregas/${id}/texto`),
 }
 

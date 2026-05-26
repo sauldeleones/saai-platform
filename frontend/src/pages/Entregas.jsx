@@ -53,6 +53,17 @@ export default function Entregas() {
     }
   }
 
+  const eliminar = async (entregaId, nombreArchivo) => {
+    if (!confirm(`¿Eliminar "${nombreArchivo}" y su análisis?`)) return
+    try {
+      await api.eliminar(entregaId)
+      setAnalisisVista(v => { const n = { ...v }; delete n[entregaId]; return n })
+      cargar()
+    } catch (err) {
+      alert(err.response?.data?.detail || 'Error al eliminar')
+    }
+  }
+
   const verAnalisis = async (entregaId) => {
     if (analisisVista[entregaId]) {
       setAnalisisVista(v => { const n = { ...v }; delete n[entregaId]; return n })
@@ -136,6 +147,12 @@ export default function Entregas() {
                           {analisisData ? 'Ocultar' : 'Ver análisis'}
                         </button>
                       )}
+                      <button
+                        onClick={() => eliminar(en.id, en.nombre_archivo)}
+                        className="text-xs text-red-500 hover:text-red-600 px-2 py-1.5 rounded hover:bg-red-50 transition-colors"
+                      >
+                        Eliminar
+                      </button>
                     </div>
                   </div>
 
