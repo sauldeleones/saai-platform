@@ -9,6 +9,8 @@ export const cursos = {
   eliminar: (id) => api.delete(`/cursos/${id}`),
   agregarTema: (cursoId, datos) => api.post(`/cursos/${cursoId}/temas`, datos),
   listarTemas: (cursoId) => api.get(`/cursos/${cursoId}/temas`),
+  editarTema: (cursoId, temaId, datos) => api.put(`/cursos/${cursoId}/temas/${temaId}`, datos),
+  eliminarTema: (cursoId, temaId) => api.delete(`/cursos/${cursoId}/temas/${temaId}`),
   brechas: (cursoId) => api.get(`/cursos/${cursoId}/brechas`),
   retroalimentacion: (cursoId, estudianteId) =>
     api.get(`/cursos/${cursoId}/retroalimentacion/${estudianteId}`),

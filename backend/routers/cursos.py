@@ -66,6 +66,27 @@ def listar_temas(curso_id: int, db: Session = Depends(get_db)):
     return db.query(Tema).filter(Tema.curso_id == curso_id).order_by(Tema.orden).all()
 
 
+@router.put("/{curso_id}/temas/{tema_id}", response_model=TemaRead)
+def editar_tema(curso_id: int, tema_id: int, datos: TemaCreate, db: Session = Depends(get_db)):
+    tema = db.query(Tema).filter(Tema.id == tema_id, Tema.curso_id == curso_id).first()
+    if not tema:
+        raise HTTPException(status_code=404, detail="Tema no encontrado")
+    for campo, valor in datos.model_dump().items():
+        setattr(tema, campo, valor)
+    db.commit()
+    db.refresh(tema)
+    return tema
+
+
+@router.delete("/{curso_id}/temas/{tema_id}", status_code=204)
+def eliminar_tema(curso_id: int, tema_id: int, db: Session = Depends(get_db)):
+    tema = db.query(Tema).filter(Tema.id == tema_id, Tema.curso_id == curso_id).first()
+    if not tema:
+        raise HTTPException(status_code=404, detail="Tema no encontrado")
+    db.delete(tema)
+    db.commit()
+
+
 @router.get("/{curso_id}/brechas")
 def dashboard_brechas(curso_id: int, db: Session = Depends(get_db)):
     """

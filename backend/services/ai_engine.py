@@ -146,7 +146,11 @@ async def analizar_entrega(texto_entrega: str, temas_curso: list[str]) -> dict:
     resultado = _parsear_json(respuesta_raw)
 
     # Calcular nivel de dominio general como promedio
-    temas = resultado.get("temas_detectados", [])
+    # Filtramos solo los elementos que sean dicts (llama3 a veces devuelve strings)
+    temas_raw = resultado.get("temas_detectados", [])
+    temas = [t for t in temas_raw if isinstance(t, dict)]
+    resultado["temas_detectados"] = temas
+
     nivel_promedio = (
         sum(t.get("dominio", 0) for t in temas) / len(temas) if temas else 0
     )
