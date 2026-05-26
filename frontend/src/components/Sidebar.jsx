@@ -1,12 +1,13 @@
 import { NavLink } from 'react-router-dom'
 
 const links = [
-  { to: '/',            label: 'Dashboard',    icon: '📊' },
-  { to: '/cursos',      label: 'Cursos',        icon: '📚' },
-  { to: '/estudiantes', label: 'Estudiantes',   icon: '👥' },
-  { to: '/entregas',    label: 'Entregas',      icon: '📁' },
-  { to: '/evaluaciones',       label: 'Evaluaciones',       icon: '📝' },
-  { to: '/retroalimentacion', label: 'Retroalimentación',  icon: '💬' },
+  { to: '/',                   label: 'Inicio',              icon: '🏠' },
+  { to: '/dashboard',          label: 'Dashboard',           icon: '📊' },
+  { to: '/cursos',             label: 'Cursos',              icon: '📚' },
+  { to: '/estudiantes',        label: 'Estudiantes',         icon: '👥' },
+  { to: '/entregas',           label: 'Entregas',            icon: '📁' },
+  { to: '/evaluaciones',       label: 'Evaluaciones',        icon: '📝' },
+  { to: '/retroalimentacion',  label: 'Retroalimentación',   icon: '💬' },
 ]
 
 export default function Sidebar() {
