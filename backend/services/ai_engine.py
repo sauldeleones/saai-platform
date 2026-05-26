@@ -43,38 +43,58 @@ Responde ÚNICAMENTE con JSON válido, sin texto adicional:
 }}"""
 
 
-def _prompt_examen(perfil_dominio: dict, tipo: str) -> str:
+def _prompt_examen(perfil_dominio: dict, temas_curso: list[str], tipo: str) -> str:
     temas_debiles = [t for t, d in perfil_dominio.items() if d < 60]
     temas_fuertes = [t for t, d in perfil_dominio.items() if d >= 60]
+    temas_sin_evidencia = [t for t in temas_curso if t not in perfil_dominio]
+
+    temas_numerados = "\n".join(f"{i+1}. {t}" for i, t in enumerate(temas_curso))
+    nombres_exactos = ", ".join(f'"{t}"' for t in temas_curso)
 
     if tipo == "adaptive":
-        enfoque = f"Enfócate en los temas débiles: {', '.join(temas_debiles) or 'ninguno identificado'}."
+        if temas_debiles:
+            enfoque = f"Genera preguntas sobre los temas con dominio bajo: {', '.join(temas_debiles)}."
+        elif temas_sin_evidencia:
+            enfoque = f"El alumno no ha mostrado evidencia de estos temas aún, enfócate en ellos: {', '.join(temas_sin_evidencia)}."
+        else:
+            enfoque = "El alumno domina todos los temas evaluados. Genera preguntas de nivel avanzado."
     else:
-        enfoque = "Distribuye preguntas equitativamente entre todos los temas."
+        enfoque = "Distribuye las 5 preguntas entre los temas del temario."
 
-    return f"""Eres un evaluador pedagógico experto. Genera un examen personalizado.
+    perfil_str = "\n".join(
+        f"- {t}: {d}% de dominio" for t, d in perfil_dominio.items()
+    ) or "- Sin análisis previos"
 
-PERFIL DEL ESTUDIANTE:
-- Temas con dominio alto (≥60): {', '.join(temas_fuertes) or 'ninguno'}
-- Temas con dominio bajo (<60): {', '.join(temas_debiles) or 'ninguno'}
+    return f"""Eres un evaluador pedagógico. Genera exactamente 5 preguntas de examen.
+
+REGLA ABSOLUTA: Solo puedes generar preguntas sobre los siguientes {len(temas_curso)} temas. No uses ningún otro tema:
+{temas_numerados}
+
+PERFIL DE DOMINIO DEL ESTUDIANTE (basado en sus entregas reales):
+{perfil_str}
 
 INSTRUCCIÓN: {enfoque}
 
-Genera exactamente 5 preguntas. Responde ÚNICAMENTE con JSON válido:
+RESTRICCIONES:
+- El campo "tema" debe ser copiado textualmente de la lista. Valores permitidos: {nombres_exactos}
+- No inventes temas, no uses sinónimos, no uses subtemas no listados
+- Las preguntas deben estar relacionadas con lo que el alumno ya trabajó o necesita trabajar según su perfil
+- tipo: solo "teorica" o "practica"
+- dificultad: solo "basica", "intermedia" o "avanzada"
+
+Responde ÚNICAMENTE con JSON válido, sin texto adicional:
 {{
   "preguntas": [
     {{
       "numero": 1,
-      "tema": "nombre del tema",
+      "tema": "nombre exacto de la lista",
       "tipo": "teorica",
       "dificultad": "basica",
       "pregunta": "texto de la pregunta",
-      "justificacion_pedagogica": "por qué esta pregunta es relevante para este estudiante"
+      "justificacion_pedagogica": "relación entre esta pregunta y el perfil del alumno"
     }}
   ]
-}}
-
-Valores permitidos — tipo: "teorica" o "practica". dificultad: "basica", "intermedia" o "avanzada"."""
+}}"""
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -166,12 +186,13 @@ async def analizar_entrega(texto_entrega: str, temas_curso: list[str]) -> dict:
     return resultado
 
 
-async def generar_examen(perfil_dominio: dict, tipo: str = "adaptive") -> dict:
+async def generar_examen(perfil_dominio: dict, temas_curso: list[str], tipo: str = "adaptive") -> dict:
     """
     Genera preguntas adaptativas según el perfil de dominio del alumno.
     perfil_dominio: {"Tema 1": 80, "Tema 2": 40, ...}
+    temas_curso: lista completa de temas del curso (ancla contra alucinaciones)
     """
-    prompt = _prompt_examen(perfil_dominio, tipo)
+    prompt = _prompt_examen(perfil_dominio, temas_curso, tipo)
     respuesta_raw = await _llamar_ia(prompt)
     resultado = _parsear_json(respuesta_raw)
     resultado["proveedor_ia"] = settings.ai_provider

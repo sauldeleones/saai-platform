@@ -7,6 +7,7 @@ import json
 from sqlalchemy.orm import Session
 
 from models.analisis import Analisis
+from models.tema import Tema
 from services.ai_engine import generar_examen
 
 
@@ -52,10 +53,16 @@ async def crear_evaluacion(
     """
     perfil = construir_perfil_dominio(estudiante_id, curso_id, db)
 
-    if not perfil:
-        # Sin análisis previos — generar examen general de diagnóstico
-        tipo = "general"
-        perfil = {}
+    temas_curso = [
+        t.nombre
+        for t in db.query(Tema)
+        .filter(Tema.curso_id == curso_id)
+        .order_by(Tema.orden)
+        .all()
+    ]
 
-    resultado = await generar_examen(perfil, tipo)
+    if not perfil:
+        tipo = "general"
+
+    resultado = await generar_examen(perfil, temas_curso, tipo)
     return resultado
