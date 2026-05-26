@@ -14,28 +14,33 @@ from config import settings
 # ─────────────────────────────────────────────────────────────────────────────
 
 def _prompt_analisis(texto_entrega: str, temas_curso: list[str]) -> str:
-    temas_str = "\n".join(f"- {t}" for t in temas_curso)
-    return f"""Eres un asistente pedagógico experto. Analiza la siguiente entrega de un estudiante.
+    temas_numerados = "\n".join(f"{i+1}. {t}" for i, t in enumerate(temas_curso))
+    nombres_exactos = ", ".join(f'"{t}"' for t in temas_curso)
+    return f"""Eres un evaluador pedagógico. Tu única tarea es analizar una entrega estudiantil usando EXCLUSIVAMENTE los temas del siguiente temario.
 
-TEMARIO DEL CURSO:
-{temas_str}
+REGLA ABSOLUTA: Solo puedes usar estos {len(temas_curso)} temas. No inventes, no agregues, no renombres:
+{temas_numerados}
 
 ENTREGA DEL ESTUDIANTE:
 {texto_entrega[:4000]}
 
-Responde ÚNICAMENTE con un objeto JSON válido, sin texto adicional, con esta estructura exacta:
+INSTRUCCIONES:
+1. Lee la entrega y detecta cuáles de los {len(temas_curso)} temas listados arriba aparecen con evidencia clara.
+2. Si un tema no aparece explícitamente en la entrega, NO lo incluyas.
+3. El valor "tema" debe ser copiado textualmente de la lista de arriba. Valores permitidos: {nombres_exactos}
+4. "dominio" es un entero 0-100 que refleja qué tan bien domina el estudiante ese tema según la evidencia en la entrega.
+5. "siguiente_tema_zdp" debe ser uno de los temas de la lista que el alumno aún no domina bien y puede aprender como próximo paso.
+
+Responde ÚNICAMENTE con JSON válido, sin texto adicional:
 {{
   "temas_detectados": [
-    {{"tema": "nombre del tema", "dominio": 75, "evidencia": "descripción breve de qué demostró el alumno"}}
+    {{"tema": "nombre exacto del tema de la lista", "dominio": 75, "evidencia": "qué escribió el alumno que demuestra este tema"}}
   ],
-  "fortalezas": ["fortaleza 1", "fortaleza 2"],
-  "debilidades": ["área de oportunidad 1"],
-  "siguiente_tema_zdp": "nombre del tema más cercano que el alumno puede aprender ahora",
-  "resumen": "Texto de 2-3 oraciones resumiendo el desempeño del estudiante."
-}}
-
-El campo "dominio" es un número entero de 0 a 100.
-Solo incluye en "temas_detectados" los temas del temario que aparecen en la entrega."""
+  "fortalezas": ["habilidad concreta que demostró el alumno"],
+  "debilidades": ["área específica que necesita reforzar"],
+  "siguiente_tema_zdp": "nombre exacto de un tema de la lista",
+  "resumen": "2-3 oraciones sobre el desempeño del estudiante."
+}}"""
 
 
 def _prompt_examen(perfil_dominio: dict, tipo: str) -> str:
